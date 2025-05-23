@@ -1,0 +1,62 @@
+<button (click)="setVisible()">
+  {{ visible ? "hide" : "show" }}
+</button>
+
+@if (visible){
+<h2>{{ title }}</h2>
+<div>
+  total: {{ counter }}
+</div>
+@if(users != undefined && users.length > 0){
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (user of users; track $index) {
+    <tr>
+      <td>{{ $index + 1 }}</td>
+      <td>{{ user }}</td>
+    </tr>
+    }
+  </tbody>
+</table>
+}@else{
+<p>no existe registro en el sistema</p>
+}
+} @else {
+<h2>lo sentimos no esta disponible la pagina!</h2>
+}
+
+<app-counter [title]="subtitle" (counterEmmit)="setCounter($event)"></app-counter>
+
+<!-- <div *ngIf="visible; else notEnable">
+  <h2>{{ title }}</h2>
+</div>
+
+<div *ngIf="visible">
+  <table *ngIf="users != undefined && users.length > 0; else isEmpty">
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users; index as i">
+        <td>{{ i + 1 }}</td>
+        <td>{{ user }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-template #isEmpty>
+    <h3>No users found</h3>
+  </ng-template>
+</div>
+
+<ng-template #notEnable>
+  <h2>lo sentimos no esta disponible la pagina!</h2>
+</ng-template> -->
