@@ -1,0 +1,26 @@
+<div class="container my-4">
+  <h2>{{ title }}</h2>
+
+  <button class="btn btn-primary mb-3" (click)="setEnabled()">
+      {{ enabled ? 'Hide Form' : 'Create User' }}
+  </button>
+  <div class="row">
+    <div class="col">
+      <user
+        [users]="users"
+        (idUserEventEmitter)="removeUser($event)"
+        (selectedUserEventEmitter)="setSelectedUser($event)"
+      ></user>
+    </div>
+  </div>
+</div>
+
+    @if(enabled){
+      <div class="abrir-modal animacion fadeIn">
+        <user-form
+          (newUserEventEmitter)="addUser($event)"
+          [user]="userSelected"
+          (enableEventEmitter)="setEnabled()"
+        ></user-form>
+      </div>
+    }
