@@ -7,6 +7,7 @@ import { user } from '../../models/user';
   templateUrl: './user.component.html'
 })
 export class UserComponent {
+  title: string = 'User Application';
 
   @Input() users: user[] = []
   

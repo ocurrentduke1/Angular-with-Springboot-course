@@ -1,6 +1,6 @@
   <h2>{{ title }}</h2>
 
-  <button class="btn btn-primary mb-3" >
+  <button class="btn btn-primary my-3" [routerLink]="['/users/Create']">
       Create User
   </button>
 
@@ -29,7 +29,7 @@
               <button class="btn btn-danger btn-sm" (click)="onRemoveUser(user.id)">Delete</button>
             </td>
             <td>
-              <button class="btn btn-info btn-sm" (click)="onSelectUser(user)">update</button>
+              <button class="btn btn-info btn-sm" [routerLink]="['/users/edit', user.id]">update</button>
             </td>
           </tr>
           }

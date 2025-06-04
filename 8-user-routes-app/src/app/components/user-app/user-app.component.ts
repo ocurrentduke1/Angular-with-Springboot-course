@@ -4,44 +4,56 @@ import { UserService } from '../../services/user.service';
 import { UserComponent } from '../user/user.component';
 import { UserFormComponent } from '../user-form/user-form.component';
 import Swal from 'sweetalert2';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { SharingDataService } from '../../services/sharing-data.service';
 
 @Component({
   selector: 'user-app',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './user-app.component.html',
   styleUrls: ['./user-app.component.css'],
 })
 export class UserAppComponent implements OnInit {
 
   users: user[] = [];
-  userSelected: user;
-  enabled: boolean = false;
 
-  constructor(private service: UserService) {
-    this.userSelected = new user();
+  constructor(private service: UserService, private shargingDataService: SharingDataService, private router: Router) {
   }
   ngOnInit(): void {
     this.service.findAll().subscribe((users) => (this.users = users));
+    this.addUser();
+    this.removeUser();
+    this.findUserById();
   }
 
-  addUser(User: user) {
-    if (User.id > 0) {
+  findUserById() {
+    this.shargingDataService.findUserEventEmitter.subscribe((id) => {
+      const user = this.users.find((u) => u.id === id);
+      this.shargingDataService.selectedUserEventEmitter.emit(user);
+    })
+  }
+
+  addUser() {
+    this.shargingDataService.newUserEventEmitter.subscribe((User) => {
+      if (User.id > 0) {
       this.users = this.users.map((u) => (u.id === User.id ? { ...User } : u));
     } else {
       this.users = [...this.users, { ...User, id: new Date().getTime() }];
     }
+    this.router.navigate(['/users'], {state: { users: this.users }});
     Swal.fire({
       title: 'Saved!',
       text: 'User information has been saved successfully.',
       icon: 'success',
     });
-    this.userSelected = new user();
-    this.enabled = false;
+    })
+    
   }
 
-  removeUser(id: number): void {
-    Swal.fire({
+  removeUser(): void {
+    this.shargingDataService.idUserEventEmitter.subscribe((id) => {
+      Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
       icon: 'warning',
@@ -52,6 +64,9 @@ export class UserAppComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.users = this.users.filter((user) => user.id !== id);
+        this.router.navigate(['/users/Create'], {skipLocationChange: true}).then(() =>{
+          this.router.navigate(['/users'], {state: { users: this.users }});
+        });
         Swal.fire({
           title: 'Deleted!',
           text: 'User has been deleted.',
@@ -59,15 +74,8 @@ export class UserAppComponent implements OnInit {
         });
       }
     });
+    })
   }
 
-  setSelectedUser(userRow: user): void {
-    this.userSelected = { ...userRow };
-    this.enabled = true;
-  }
-
-  setEnabled(): void {
-    this.enabled = !this.enabled;
-  }
 
 }
