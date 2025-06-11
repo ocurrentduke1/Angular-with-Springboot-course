@@ -14,9 +14,18 @@ export class UserComponent implements OnInit{
 
   users: user[] = []
   
-  constructor(private router: Router, private service: UserService,private sharingDataService: SharingDataService) { }
+  constructor(
+    private router: Router,
+     private service: UserService,
+     private sharingDataService: SharingDataService) {
+      if(this.router.getCurrentNavigation()?.extras.state){
+        this.users = this.router.getCurrentNavigation()?.extras.state!['users'];
+      }
+      }
   ngOnInit(): void {
-    this.service.findAll().subscribe((users) => this.users = users)
+    if(this.users.length == 0 || this.users == undefined || this.users == null) {
+      this.service.findAll().subscribe((users) => this.users = users)
+    }
   }
 
   idUserEventEmitter = new EventEmitter();

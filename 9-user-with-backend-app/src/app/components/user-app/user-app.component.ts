@@ -41,15 +41,14 @@ export class UserAppComponent implements OnInit {
       if (User.id > 0) {
         this.service.update(User).subscribe((userUpdated) => {
           this.users = this.users.map((u) =>
-            u.id == userUpdated.id ? { ...userUpdated } : u
-          );
-          this.router.navigate(['/users']);
+            u.id == userUpdated.id ? { ...userUpdated } : u);
+          this.router.navigate(['/users'], {state: {users: this.users}});
         });
       } else {
         this.service.create(User).subscribe((userNew) => {
           console.log(userNew);
           this.users = [...this.users, { ...userNew }];
-          this.router.navigate(['/users']);
+          this.router.navigate(['/users'], {state: {users: this.users}});
         });
       }
 
@@ -78,9 +77,7 @@ export class UserAppComponent implements OnInit {
             this.router
               .navigate(['/users/Create'], { skipLocationChange: true })
               .then(() => {
-                this.router.navigate(['/users'], {
-                  state: { users: this.users },
-                });
+                this.router.navigate(['/users'], {state: { users: this.users },});
               });
           });
           Swal.fire({
