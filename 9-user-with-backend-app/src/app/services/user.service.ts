@@ -16,6 +16,10 @@ findAll(): Observable<user[]> {
   return this.http.get<user[]>(this.url);
 }
 
+findAllPageable(page: number): Observable<any> {
+  return this.http.get<any>(`${this.url}/page/${page}`);
+}
+
 findById(id: number): Observable<user>{
   return this.http.get<user>(`${this.url}/${id}`);
 }

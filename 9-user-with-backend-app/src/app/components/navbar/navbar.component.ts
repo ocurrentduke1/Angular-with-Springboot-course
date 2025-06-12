@@ -10,4 +10,6 @@ import { user } from '../../models/user';
 export class NavbarComponent {
 
   @Input() users: user[] = [];
-}
+  @Input() paginator = {};
+
+} 
