@@ -84,7 +84,8 @@
             </div>
             } } -->
           </div>
-          <div>
+          @if(user.id == 0 || user.id == null) {
+            <div>
             <input
               placeholder="password"
               name="password"
@@ -107,6 +108,7 @@
             </div>
             } } -->
           </div>
+          }
           <div>
             <button
               type="submit"
