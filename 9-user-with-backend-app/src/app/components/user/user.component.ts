@@ -5,6 +5,9 @@ import { UserService } from '../../services/user.service';
 import { SharingDataService } from '../../services/sharing-data.service';
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { AuthService } from '../../services/auth.service';
+import { Store } from '@ngrx/store';
+import Swal from 'sweetalert2';
+import { load, remove } from '../../store/users/users.actions';
 
 @Component({
   selector: 'user',
@@ -19,44 +22,43 @@ export class UserComponent implements OnInit {
   pageUrl: string = '/users/page';
 
   constructor(
+    private store: Store<{users: any}>,
     private router: Router,
     private service: UserService,
     private sharingDataService: SharingDataService,
     private auth: AuthService,
     private route: ActivatedRoute
   ) {
-    if (this.router.getCurrentNavigation()?.extras.state) {
-      this.users = this.router.getCurrentNavigation()?.extras.state!['users'];
-      this.paginator = this.router.getCurrentNavigation()?.extras.state!['paginator'];
-    }
+
+    this.store.select('users').subscribe(state => {
+      this.users = state.users;
+      this.paginator = state.paginator;
+    });
+
   }
   ngOnInit(): void {
-    if (
-      this.users.length == 0 ||
-      this.users == undefined ||
-      this.users == null
-    ) {
-      // this.service.findAll().subscribe((users) => this.users = users)
       this.route.paramMap.subscribe((params) => {
-        const page: number = +(params.get('page') || '0');
-        console.log(page);
-        this.service.findAllPageable(page).subscribe((pageable) => {
-          this.users = pageable.content as user[];
-          this.paginator = pageable;
-          this.sharingDataService.pageUsersEventEmitter.emit({
-            users: this.users,
-            paginator: this.paginator,
-          });
-        });
+        this.store.dispatch(load({page: +(params.get('page') || '0')}));
       });
-    }
   }
 
   idUserEventEmitter = new EventEmitter();
   selectedUserEventEmitter = new EventEmitter();
 
   onRemoveUser(id: number): void {
-    this.sharingDataService.idUserEventEmitter.emit(id);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+            this.store.dispatch(remove({id}));
+        }
+      });
   }
 
   onSelectUser(user: user): void {
